@@ -86,6 +86,30 @@ To understand why conventional CRMs degrade advisor efficiency and client conver
 
 ---
 
+## 📸 Interface & Visual Walkthrough
+
+### 1. Single-Screen Command Center
+> Real-time wealth advisory cockpit featuring executive KPI metrics, priority-pinned follow-ups for today, crimson overdue alerts, and Zoho-inspired Zia AI *"Best time to contact"* recommendations.
+
+![Main Dashboard](screenshots/01_main_dashboard.png)
+
+### 2. Multi-Criteria Filtering & Real-Time Search
+> Instant client filtering with `⌘K` keyboard activation across prospect names, organizations, phone numbers, and historical discussion transcripts, coupled with dynamic stage counts.
+
+![Search and Filtering](screenshots/02_search_and_filters.png)
+
+### 3. Chronological Lead Timeline & Chain-of-Thought AI Copilot
+> Reverse-chronological interaction rail with interactive pipeline progression chevrons (`New` $\rightarrow$ `Won`), 1-click follow-up presets, and an inspectable Chain-of-Thought AI dossier displaying detected intent, ISO-resolved dates, recommended stage, and fiduciary reasoning traces.
+
+![Timeline with AI Reasoning](screenshots/03_timeline_ai_reasoning.png)
+
+### 4. Streamlined Prospect Intake Modal
+> Lightweight intake dialog accessible via the `N` keyboard shortcut with client demographic validation and direct initial note capture.
+
+![Add New Lead Modal](screenshots/04_add_new_lead_modal.png)
+
+---
+
 ## 🚀 Core Functional Capabilities
 
 ### 1. Single-Screen Command Center
