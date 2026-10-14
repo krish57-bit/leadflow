@@ -19,7 +19,7 @@ import { LeadTimelineModal } from "../components/LeadTimelineModal";
 import { AddLeadModal } from "../components/AddLeadModal";
 
 export default function LeadFlowPage() {
-  const [leads, setLeads] = useState<LeadSummary[]>([]);
+  const [allLeads, setAllLeads] = useState<LeadSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -35,23 +35,19 @@ export default function LeadFlowPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isSeeding, setIsSeeding] = useState(false);
 
-  // Fetch Leads from Backend
+  // Fetch All Leads from Backend
   const loadLeads = useCallback(async () => {
     try {
       setIsLoading(true);
       setErrorMsg(null);
-      const data = await fetchLeads({
-        status: statusFilter,
-        search: searchQuery,
-        follow_up_filter: followUpFilter,
-      });
-      setLeads(data);
+      const data = await fetchLeads(); // Fetch all leads to maintain single source of truth
+      setAllLeads(data);
     } catch (err: any) {
       setErrorMsg(err.message || "Failed to load leads from server.");
     } finally {
       setIsLoading(false);
     }
-  }, [statusFilter, searchQuery, followUpFilter]);
+  }, []);
 
   useEffect(() => {
     loadLeads();
@@ -104,34 +100,80 @@ export default function LeadFlowPage() {
     }
   };
 
-  // Categorize leads into Today's Follow-ups, Overdue, and General list
-  const { todayLeads, overdueLeads, otherLeads, statusCounts, todayCount, overdueCount } =
+  // Global Pipeline Stats (STABLE: never change or collapse to 0 when user clicks filters)
+  const { globalStatusCounts, globalTodayCount, globalOverdueCount, globalWonCount, totalPipeline } =
     useMemo(() => {
       const counts: Record<string, number> = {};
       let tCount = 0;
       let oCount = 0;
 
-      leads.forEach((l) => {
+      allLeads.forEach((l) => {
         counts[l.status] = (counts[l.status] || 0) + 1;
         if (l.follow_up_status === "today") tCount++;
         if (l.follow_up_status === "overdue") oCount++;
       });
 
-      const today = leads.filter((l) => l.follow_up_status === "today");
-      const overdue = leads.filter((l) => l.follow_up_status === "overdue");
-      const others = leads.filter(
+      return {
+        globalStatusCounts: counts,
+        globalTodayCount: tCount,
+        globalOverdueCount: oCount,
+        globalWonCount: counts["Won"] || 0,
+        totalPipeline: allLeads.length,
+      };
+    }, [allLeads]);
+
+  // Reactive Filtered Leads
+  const filteredLeads = useMemo(() => {
+    return allLeads.filter((lead) => {
+      // 1. Status Filter
+      if (statusFilter !== "All" && lead.status !== statusFilter) {
+        return false;
+      }
+
+      // 2. Follow-up Filter
+      if (followUpFilter !== "all" && lead.follow_up_status !== followUpFilter) {
+        return false;
+      }
+
+      // 3. Search Query
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase().trim();
+        const matchesName = lead.name.toLowerCase().includes(query);
+        const matchesCompany = lead.company?.toLowerCase().includes(query) ?? false;
+        const matchesPhone = lead.phone?.toLowerCase().includes(query) ?? false;
+        const matchesNote = lead.last_discussion_note?.toLowerCase().includes(query) ?? false;
+        if (!matchesName && !matchesCompany && !matchesPhone && !matchesNote) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [allLeads, statusFilter, followUpFilter, searchQuery]);
+
+  // Section Partitioning
+  const isDefaultView = statusFilter === "All" && followUpFilter === "all" && !searchQuery.trim();
+
+  const { todaySectionLeads, overdueSectionLeads, otherSectionLeads } = useMemo(() => {
+    if (isDefaultView) {
+      const today = allLeads.filter((l) => l.follow_up_status === "today");
+      const overdue = allLeads.filter((l) => l.follow_up_status === "overdue");
+      const others = allLeads.filter(
         (l) => l.follow_up_status !== "today" && l.follow_up_status !== "overdue"
       );
-
       return {
-        todayLeads: today,
-        overdueLeads: overdue,
-        otherLeads: others,
-        statusCounts: counts,
-        todayCount: tCount,
-        overdueCount: oCount,
+        todaySectionLeads: today,
+        overdueSectionLeads: overdue,
+        otherSectionLeads: others,
       };
-    }, [leads]);
+    } else {
+      return {
+        todaySectionLeads: [],
+        overdueSectionLeads: [],
+        otherSectionLeads: filteredLeads,
+      };
+    }
+  }, [isDefaultView, allLeads, filteredLeads]);
 
   return (
     <div className="min-h-screen bg-slate-50/60 pb-16">
@@ -206,7 +248,7 @@ export default function LeadFlowPage() {
               <span className="text-[11px] font-bold uppercase tracking-wider">Total Pipeline</span>
               <Users className="w-3.5 h-3.5 text-slate-400" />
             </div>
-            <div className="text-xl font-extrabold text-slate-900">{leads.length}</div>
+            <div className="text-xl font-extrabold text-slate-900">{totalPipeline}</div>
             <div className="text-[10px] text-slate-400">Active advisory prospects</div>
           </div>
 
@@ -215,7 +257,7 @@ export default function LeadFlowPage() {
               <span className="text-[11px] font-bold uppercase tracking-wider">Due Today</span>
               <Calendar className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
             </div>
-            <div className="text-xl font-extrabold text-blue-900">{todayCount}</div>
+            <div className="text-xl font-extrabold text-blue-900">{globalTodayCount}</div>
             <div className="text-[10px] text-blue-600 font-medium">Pinned for immediate action</div>
           </div>
 
@@ -224,9 +266,9 @@ export default function LeadFlowPage() {
               <span className="text-[11px] font-bold uppercase tracking-wider">Overdue</span>
               <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
             </div>
-            <div className="text-xl font-extrabold text-rose-900">{overdueCount}</div>
+            <div className="text-xl font-extrabold text-rose-900">{globalOverdueCount}</div>
             <div className="text-[10px] text-rose-600 font-medium">
-              {overdueCount > 0 ? "Requires attention" : "All caught up"}
+              {globalOverdueCount > 0 ? "Requires attention" : "All caught up"}
             </div>
           </div>
 
@@ -235,9 +277,9 @@ export default function LeadFlowPage() {
               <span className="text-[11px] font-bold uppercase tracking-wider">Mandates Won</span>
               <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
             </div>
-            <div className="text-xl font-extrabold text-slate-900">{statusCounts["Won"] || 0}</div>
+            <div className="text-xl font-extrabold text-slate-900">{globalWonCount}</div>
             <div className="text-[10px] text-emerald-600 font-medium">
-              {leads.length > 0 ? Math.round(((statusCounts["Won"] || 0) / leads.length) * 100) : 0}% win rate
+              {totalPipeline > 0 ? Math.round((globalWonCount / totalPipeline) * 100) : 0}% win rate
             </div>
           </div>
         </div>
@@ -251,20 +293,21 @@ export default function LeadFlowPage() {
             onSearchChange={setSearchQuery}
             followUpFilter={followUpFilter}
             onFollowUpFilterChange={setFollowUpFilter}
-            statusCounts={statusCounts}
-            todayCount={todayCount}
-            overdueCount={overdueCount}
+            totalCount={totalPipeline}
+            statusCounts={globalStatusCounts}
+            todayCount={globalTodayCount}
+            overdueCount={globalOverdueCount}
           />
         </div>
 
         {/* Loading Skeletons */}
-        {isLoading && leads.length === 0 ? (
+        {isLoading && allLeads.length === 0 ? (
           <div className="space-y-4 animate-pulse">
             <div className="h-28 bg-slate-200/70 rounded-xl" />
             <div className="h-24 bg-slate-200/60 rounded-xl" />
             <div className="h-24 bg-slate-200/60 rounded-xl" />
           </div>
-        ) : leads.length === 0 ? (
+        ) : filteredLeads.length === 0 ? (
           /* Empty Search / Filter State */
           <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-3 shadow-xs">
             <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center">
@@ -287,19 +330,19 @@ export default function LeadFlowPage() {
           </div>
         ) : (
           <div className="space-y-6">
-            {/* 1. PINNED TODAY'S FOLLOW-UPS SECTION */}
-            {todayLeads.length > 0 && (
+            {/* 1. PINNED TODAY'S FOLLOW-UPS SECTION (Default Cockpit View) */}
+            {todaySectionLeads.length > 0 && (
               <section className="space-y-3">
                 <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-slate-500">
                   <span className="text-base">🚀</span>
                   <span>TODAY&apos;S FOLLOW-UPS</span>
                   <span className="ml-1 px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold">
-                    {todayLeads.length} Pinned
+                    {todaySectionLeads.length} Pinned
                   </span>
                 </div>
 
                 <div className="space-y-3">
-                  {todayLeads.map((lead) => (
+                  {todaySectionLeads.map((lead) => (
                     <LeadCard
                       key={lead.id}
                       lead={lead}
@@ -311,19 +354,19 @@ export default function LeadFlowPage() {
               </section>
             )}
 
-            {/* 2. OVERDUE FOLLOW-UPS SECTION (Bonus Feature) */}
-            {overdueLeads.length > 0 && (
+            {/* 2. OVERDUE FOLLOW-UPS SECTION (Default Cockpit View) */}
+            {overdueSectionLeads.length > 0 && (
               <section className="space-y-3">
                 <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-rose-600">
                   <span className="text-base">⚠️</span>
                   <span>OVERDUE FOLLOW-UPS</span>
                   <span className="ml-1 px-2 py-0.5 rounded-full bg-rose-100 text-rose-800 text-[10px] font-bold">
-                    {overdueLeads.length} Requires Attention
+                    {overdueSectionLeads.length} Requires Attention
                   </span>
                 </div>
 
                 <div className="space-y-3">
-                  {overdueLeads.map((lead) => (
+                  {overdueSectionLeads.map((lead) => (
                     <LeadCard
                       key={lead.id}
                       lead={lead}
@@ -335,33 +378,35 @@ export default function LeadFlowPage() {
               </section>
             )}
 
-            {/* 3. ALL LEADS SECTION */}
+            {/* 3. MAIN LEADS LIST SECTION */}
             <section className="space-y-3">
               <div className="flex items-center justify-between text-xs font-extrabold uppercase tracking-wider text-slate-500">
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4 text-slate-400" />
                   <span>
-                    {statusFilter !== "All"
+                    {isDefaultView
+                      ? "ALL LEADS"
+                      : statusFilter !== "All"
                       ? `${statusFilter.toUpperCase()} LEADS`
-                      : "ALL LEADS"}
+                      : followUpFilter === "today"
+                      ? "TODAY'S FOLLOW-UPS"
+                      : followUpFilter === "overdue"
+                      ? "OVERDUE FOLLOW-UPS"
+                      : "SEARCH RESULTS"}
                   </span>
                   <span className="ml-1 px-2 py-0.5 rounded-full bg-slate-200/80 text-slate-700 text-[10px] font-bold">
-                    {otherLeads.length}
+                    {otherSectionLeads.length}
                   </span>
                 </div>
               </div>
 
-              {otherLeads.length === 0 && todayLeads.length > 0 && (
-                <div className="p-6 bg-white rounded-xl border border-dashed border-slate-200 text-center text-xs text-slate-500">
-                  All active leads matching current criteria have today&apos;s follow-up reminders pinned above.
-                </div>
-              )}
-
               <div className="space-y-3">
-                {otherLeads.map((lead) => (
+                {otherSectionLeads.map((lead) => (
                   <LeadCard
                     key={lead.id}
                     lead={lead}
+                    isPinnedToday={lead.follow_up_status === "today"}
+                    isOverdue={lead.follow_up_status === "overdue"}
                     onClick={() => handleSelectLead(lead)}
                   />
                 ))}

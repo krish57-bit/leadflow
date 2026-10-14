@@ -10,6 +10,7 @@ interface FilterBarProps {
   followUpFilter: string;
   onFollowUpFilterChange: (filter: string) => void;
   statusCounts: Record<string, number>;
+  totalCount: number;
   todayCount: number;
   overdueCount: number;
 }
@@ -32,6 +33,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
   followUpFilter,
   onFollowUpFilterChange,
   statusCounts,
+  totalCount,
   todayCount,
   overdueCount,
 }) => {
@@ -62,7 +64,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             placeholder="Search leads, companies, or notes... (⌘K)"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-9 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-sm"
+            className="w-full pl-10 pr-9 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all shadow-xs"
           />
           {searchQuery && (
             <button
@@ -75,24 +77,26 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         </div>
 
         {/* Follow-up Quick Chips */}
-        <div className="flex items-center gap-1.5 self-start sm:self-auto text-xs font-medium">
+        <div className="flex items-center gap-1.5 self-start sm:self-auto text-xs font-semibold">
           <button
+            type="button"
             onClick={() => onFollowUpFilterChange("all")}
-            className={`px-3 py-1.5 rounded-lg border transition-all ${
+            className={`px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${
               followUpFilter === "all"
-                ? "bg-slate-900 text-white border-slate-900 shadow-sm"
-                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50"
+                ? "bg-slate-900 text-white border-slate-900 shadow-xs"
+                : "bg-white text-slate-600 border-slate-200 hover:bg-slate-50 hover:text-slate-900"
             }`}
           >
             All Leads
           </button>
           <button
+            type="button"
             onClick={() =>
               onFollowUpFilterChange(followUpFilter === "today" ? "all" : "today")
             }
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${
               followUpFilter === "today"
-                ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                ? "bg-blue-600 text-white border-blue-600 shadow-xs ring-2 ring-blue-500/20"
                 : "bg-white text-blue-700 border-blue-200 hover:bg-blue-50"
             }`}
           >
@@ -100,9 +104,9 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             <span>Today</span>
             {todayCount > 0 && (
               <span
-                className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
                   followUpFilter === "today"
-                    ? "bg-blue-700 text-white"
+                    ? "bg-white/25 text-white"
                     : "bg-blue-100 text-blue-800"
                 }`}
               >
@@ -111,14 +115,15 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             )}
           </button>
           <button
+            type="button"
             onClick={() =>
               onFollowUpFilterChange(
                 followUpFilter === "overdue" ? "all" : "overdue"
               )
             }
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all cursor-pointer ${
               followUpFilter === "overdue"
-                ? "bg-rose-600 text-white border-rose-600 shadow-sm"
+                ? "bg-rose-600 text-white border-rose-600 shadow-xs ring-2 ring-rose-500/20"
                 : "bg-white text-rose-700 border-rose-200 hover:bg-rose-50"
             }`}
           >
@@ -126,9 +131,9 @@ export const FilterBar: React.FC<FilterBarProps> = ({
             <span>Overdue</span>
             {overdueCount > 0 && (
               <span
-                className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
                   followUpFilter === "overdue"
-                    ? "bg-rose-700 text-white"
+                    ? "bg-white/25 text-white"
                     : "bg-rose-100 text-rose-800"
                 }`}
               >
@@ -148,25 +153,26 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           const isSelected = currentStatus === opt.value;
           const count =
             opt.value === "All"
-              ? Object.values(statusCounts).reduce((a, b) => a + b, 0)
+              ? totalCount
               : statusCounts[opt.value] || 0;
 
           return (
             <button
               key={opt.value}
+              type="button"
               onClick={() => onStatusChange(opt.value)}
-              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all shrink-0 ${
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all shrink-0 cursor-pointer select-none ${
                 isSelected
-                  ? "bg-slate-900 text-white shadow-sm"
-                  : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:border-slate-300"
+                  ? "bg-blue-600 text-white shadow-xs ring-2 ring-blue-500/20"
+                  : "bg-white text-slate-700 border border-slate-200/90 hover:bg-slate-50 hover:border-slate-300"
               }`}
             >
               <span>{opt.label}</span>
               <span
-                className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
+                className={`text-[10px] px-2 py-0.5 rounded-full font-bold transition-colors ${
                   isSelected
-                    ? "bg-slate-800 text-slate-200"
-                    : "bg-slate-100 text-slate-500"
+                    ? "bg-white/25 text-white"
+                    : "bg-slate-100 text-slate-600"
                 }`}
               >
                 {count}
