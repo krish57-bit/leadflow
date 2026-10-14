@@ -23,6 +23,7 @@ export interface Discussion {
   id: number;
   lead_id: number;
   note: string;
+  activity_type?: "call" | "meeting" | "proposal" | "note" | "inbound" | string;
   follow_up_date?: string | null;
   ai_analysis?: string | null;
   created_at: string;
@@ -37,6 +38,7 @@ export interface LeadSummary {
   status: LeadStatus;
   follow_up_date?: string | null;
   follow_up_status: FollowUpStatus;
+  best_time_to_contact?: string | null;
   last_discussion_note?: string | null;
   last_discussion_at?: string | null;
   time_ago?: string | null;
@@ -55,11 +57,13 @@ export interface CreateLeadPayload {
   phone?: string;
   status?: LeadStatus;
   initial_note?: string;
+  activity_type?: string;
   follow_up_date?: string;
 }
 
 export interface CreateDiscussionPayload {
   note: string;
+  activity_type?: string;
   follow_up_date?: string | null;
   ai_analysis?: string | null;
 }

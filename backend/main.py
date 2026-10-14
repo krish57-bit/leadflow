@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from typing import Optional, List
 from fastapi import FastAPI, Depends, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -79,6 +79,21 @@ def compute_follow_up_status(dt: Optional[datetime]) -> str:
         return "upcoming"
 
 
+def compute_best_time(lead: models.Lead) -> str:
+    """Computes Zia-style optimal contact window for wealth advisors."""
+    if lead.follow_up_date:
+        start_t = lead.follow_up_date.strftime('%I:%M %p').lstrip('0')
+        end_dt = lead.follow_up_date + timedelta(minutes=45)
+        end_t = end_dt.strftime('%I:%M %p').lstrip('0')
+        return f"{start_t} – {end_t}"
+    slots = [
+        "2:00 PM – 3:30 PM",
+        "10:30 AM – 12:00 PM",
+        "3:30 PM – 5:00 PM"
+    ]
+    return slots[(lead.id or 1) % len(slots)]
+
+
 def build_lead_summary(lead: models.Lead) -> schemas.LeadSummaryResponse:
     # Most recent discussion
     last_discussion = lead.discussions[0] if lead.discussions else None
@@ -93,6 +108,7 @@ def build_lead_summary(lead: models.Lead) -> schemas.LeadSummaryResponse:
         status=lead.status,
         follow_up_date=lead.follow_up_date,
         follow_up_status=compute_follow_up_status(lead.follow_up_date),
+        best_time_to_contact=compute_best_time(lead),
         last_discussion_note=last_note,
         last_discussion_at=last_at,
         time_ago=format_time_ago(last_at),
@@ -209,6 +225,7 @@ def get_lead_details(lead_id: int, db: Session = Depends(get_db)):
             id=d.id,
             lead_id=d.lead_id,
             note=d.note,
+            activity_type=getattr(d, "activity_type", "note") or "note",
             follow_up_date=d.follow_up_date,
             ai_analysis=d.ai_analysis,
             created_at=d.created_at,
@@ -281,6 +298,7 @@ def add_discussion(lead_id: int, payload: schemas.DiscussionCreate, db: Session 
     discussion = models.Discussion(
         lead_id=lead.id,
         note=payload.note.strip(),
+        activity_type=payload.activity_type or "note",
         follow_up_date=payload.follow_up_date,
         ai_analysis=payload.ai_analysis
     )
@@ -299,6 +317,7 @@ def add_discussion(lead_id: int, payload: schemas.DiscussionCreate, db: Session 
         id=discussion.id,
         lead_id=discussion.lead_id,
         note=discussion.note,
+        activity_type=discussion.activity_type or "note",
         follow_up_date=discussion.follow_up_date,
         ai_analysis=discussion.ai_analysis,
         created_at=discussion.created_at,

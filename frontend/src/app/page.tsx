@@ -199,6 +199,49 @@ export default function LeadFlowPage() {
           </div>
         )}
 
+        {/* Zoho-Inspired KPI & Activity Signal Strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div className="bg-white rounded-xl p-3.5 border border-slate-200/80 shadow-2xs space-y-1">
+            <div className="flex items-center justify-between text-slate-500">
+              <span className="text-[11px] font-bold uppercase tracking-wider">Total Pipeline</span>
+              <Users className="w-3.5 h-3.5 text-slate-400" />
+            </div>
+            <div className="text-xl font-extrabold text-slate-900">{leads.length}</div>
+            <div className="text-[10px] text-slate-400">Active advisory prospects</div>
+          </div>
+
+          <div className="bg-white rounded-xl p-3.5 border border-blue-200/80 shadow-2xs space-y-1 bg-gradient-to-br from-blue-50/30 to-white">
+            <div className="flex items-center justify-between text-blue-700">
+              <span className="text-[11px] font-bold uppercase tracking-wider">Due Today</span>
+              <Calendar className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
+            </div>
+            <div className="text-xl font-extrabold text-blue-900">{todayCount}</div>
+            <div className="text-[10px] text-blue-600 font-medium">Pinned for immediate action</div>
+          </div>
+
+          <div className="bg-white rounded-xl p-3.5 border border-rose-200/80 shadow-2xs space-y-1 bg-gradient-to-br from-rose-50/30 to-white">
+            <div className="flex items-center justify-between text-rose-700">
+              <span className="text-[11px] font-bold uppercase tracking-wider">Overdue</span>
+              <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
+            </div>
+            <div className="text-xl font-extrabold text-rose-900">{overdueCount}</div>
+            <div className="text-[10px] text-rose-600 font-medium">
+              {overdueCount > 0 ? "Requires attention" : "All caught up"}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl p-3.5 border border-slate-200/80 shadow-2xs space-y-1">
+            <div className="flex items-center justify-between text-emerald-700">
+              <span className="text-[11px] font-bold uppercase tracking-wider">Mandates Won</span>
+              <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
+            </div>
+            <div className="text-xl font-extrabold text-slate-900">{statusCounts["Won"] || 0}</div>
+            <div className="text-[10px] text-emerald-600 font-medium">
+              {leads.length > 0 ? Math.round(((statusCounts["Won"] || 0) / leads.length) * 100) : 0}% win rate
+            </div>
+          </div>
+        </div>
+
         {/* Filter & Live Search Bar */}
         <div className="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-xs">
           <FilterBar

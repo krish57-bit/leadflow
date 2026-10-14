@@ -16,6 +16,7 @@ VALID_STATUSES = [
 # Discussion Schemas
 class DiscussionBase(BaseModel):
     note: str = Field(..., min_length=1, description="Discussion notes content")
+    activity_type: Optional[str] = "note"  # "call", "meeting", "proposal", "note", "inbound"
     follow_up_date: Optional[datetime] = None
 
 
@@ -29,6 +30,7 @@ class DiscussionResponse(BaseModel):
     id: int
     lead_id: int
     note: str
+    activity_type: str = "note"
     follow_up_date: Optional[datetime] = None
     ai_analysis: Optional[str] = None
     created_at: datetime
@@ -45,6 +47,7 @@ class LeadBase(BaseModel):
 class LeadCreate(LeadBase):
     status: Optional[str] = "New"
     initial_note: Optional[str] = None
+    activity_type: Optional[str] = "note"
     follow_up_date: Optional[datetime] = None
 
 
@@ -70,6 +73,7 @@ class LeadSummaryResponse(BaseModel):
     status: str
     follow_up_date: Optional[datetime] = None
     follow_up_status: str  # "today", "overdue", "upcoming", "none"
+    best_time_to_contact: Optional[str] = None
     last_discussion_note: Optional[str] = None
     last_discussion_at: Optional[datetime] = None
     time_ago: Optional[str] = None

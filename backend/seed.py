@@ -182,6 +182,7 @@ def seed_database(db: Session = None) -> int:
                 disc = models.Discussion(
                     lead_id=lead.id,
                     note=d["note"],
+                    activity_type=d.get("activity_type", "note"),
                     follow_up_date=d.get("follow_up_date"),
                     ai_analysis=d.get("ai_analysis"),
                     created_at=d["created_at"]

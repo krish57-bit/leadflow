@@ -91,29 +91,38 @@ export const LeadCard: React.FC<LeadCardProps> = ({
             )}
           </div>
 
-          {/* Follow-up Reminder Badge */}
-          {followUpLabel && (
-            <div className="pt-1 flex items-center gap-2">
-              {lead.follow_up_status === "today" && (
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
-                  <Bell className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
-                  <span>{followUpLabel}</span>
-                </div>
-              )}
-              {lead.follow_up_status === "overdue" && (
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200">
-                  <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
-                  <span>{followUpLabel}</span>
-                </div>
-              )}
-              {lead.follow_up_status === "upcoming" && (
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
-                  <Calendar className="w-3.5 h-3.5 text-slate-500" />
-                  <span>{followUpLabel}</span>
-                </div>
-              )}
-            </div>
-          )}
+          {/* Follow-up Reminder Badge & Zia Best Time to Contact */}
+          <div className="pt-1 flex items-center gap-2 flex-wrap">
+            {followUpLabel && (
+              <>
+                {lead.follow_up_status === "today" && (
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                    <Bell className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
+                    <span>{followUpLabel}</span>
+                  </div>
+                )}
+                {lead.follow_up_status === "overdue" && (
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200">
+                    <AlertTriangle className="w-3.5 h-3.5 text-rose-600" />
+                    <span>{followUpLabel}</span>
+                  </div>
+                )}
+                {lead.follow_up_status === "upcoming" && (
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                    <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                    <span>{followUpLabel}</span>
+                  </div>
+                )}
+              </>
+            )}
+
+            {lead.best_time_to_contact && (
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium bg-indigo-50/80 text-indigo-700 border border-indigo-200/60" title="Zia AI Best Time to Reach Advisor Client">
+                <span className="text-[10px]">✨</span>
+                <span>Best time: {lead.best_time_to_contact}</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Top Right: Status Badge & Chevron indicator */}

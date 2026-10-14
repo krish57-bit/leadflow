@@ -30,6 +30,7 @@ class Discussion(Base):
     id = Column(Integer, primary_key=True, index=True)
     lead_id = Column(Integer, ForeignKey("leads.id", ondelete="CASCADE"), nullable=False, index=True)
     note = Column(Text, nullable=False)
+    activity_type = Column(String(50), default="note", nullable=False)  # "call", "meeting", "proposal", "note", "inbound"
     follow_up_date = Column(DateTime, nullable=True)
     ai_analysis = Column(Text, nullable=True)  # Stores JSON serialized AI reasoning & insights
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
