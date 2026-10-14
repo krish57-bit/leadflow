@@ -1,120 +1,186 @@
-# 📈 LeadFlow — AI-Smart Wealth Advisor CRM
+# 📈 LeadFlow — AI-Augmented Wealth Advisor CRM
 
-> A high-performance, single-screen Lead Management and Client Engagement CRM built for **Pravar AI**, tailored to enable wealth advisors to track prospects, log discussions with full chronological timelines, automate follow-up commitments, and leverage a **Chain-of-Thought AI Reasoning Architecture**.
-
----
-
-## 🌟 Executive Summary & Problem Context
-
-At **Pravar AI**, the mission is to re-imagine financial planning and wealth management—empowering advisors to deliver timely, fiduciary financial advice at scale and treat every customer as their top customer.
-
-Traditional CRMs are static, cumbersome databases where sales notes get buried, action items are forgotten, and follow-ups fall through the cracks. **LeadFlow** solves this with a **single-screen, high-breathing-room command center**:
-1. **Pinned Urgency**: Today's scheduled follow-ups are pinned prominently at the top with live alert badges. Overdue follow-ups are surfaced in urgent crimson styling.
-2. **Reverse-Chronological Discussion Timeline**: Deep relationship context is maintained through an instant modal dialog where advisors log notes, set follow-up commitments, and update stages with immediate reactivity.
-3. **AI Reasoning Architecture**: Ingests unstructured notes, resolves natural language temporal commitments (*"next Tuesday at 2pm"*), detects financial intents (*"tax-loss harvesting", "liquidity event"*), scores sentiment momentum, and provides an inspectable **fiduciary reasoning trace**.
+> An enterprise-grade, single-screen Client Engagement and Lead Management CRM engineered for **Pravar AI**, empowering wealth advisors to track prospects, maintain rich chronological interaction timelines, automate fiduciary follow-up commitments, and leverage a **Chain-of-Thought AI Reasoning Architecture**.
 
 ---
 
-## 🚀 Key Features & Assessment Requirements
+## 🌟 Executive Summary & Architectural Motivation
 
-### 1. Single-Screen Lead Management
-- **Lead List**: Displays lead name, company, direct phone, status badge, excerpt of the last discussion note, and relative time since the last interaction (e.g. *“2 hours ago”*, *“2 days ago”*, *“3 weeks ago”*).
-- **Today's Follow-ups Pinned (`🚀 TODAY'S FOLLOW-UPS`)**: Follow-up reminders scheduled for today are automatically pinned at the very top of the interface.
-- **Overdue Highlighting (`⚠️ OVERDUE FOLLOW-UPS`)**: Scheduled follow-ups that passed without resolution are highlighted in high-visibility crimson cards with urgency badges.
-- **Add New Lead Modal**: Clean modal with autofocus, input validation (Full Name required; Company, Phone, Initial Note optional; status defaults to `New`).
+In modern wealth management and financial planning, an advisor's primary constraint is cognitive bandwidth. High-net-worth relationships require meticulous follow-up, contextual memory of lifecycle events (e.g., liquidity events, retirement milestones, tax obligations), and prompt engagement. Traditional enterprise CRMs fail advisors because they function as passive, siloed data repositories requiring high-friction manual data entry.
 
-### 2. Interactive Lead Timeline Dialog
-- **Modal View**: Clicking any lead immediately launches an interactive timeline modal without navigating to a new page.
-- **Full Discussion History**: Discussions rendered in reverse chronological order with connected timeline markers, timestamps, relative time-ago, and associated follow-up badges.
-- **Interactive Stage Management**: Status dropdown selector in the header (New, Contacted, Qualified, Proposal Sent, Won, Lost) that updates both database and parent list instantly.
-- **Discussion Logger & Follow-up Scheduler**:
-  - Textarea for logging meeting summaries or conversational bullets.
-  - **✨ AI Reason & Extract**: Runs intelligent temporal resolution and fiduciary intent analysis on note text.
-  - **Set Follow-up**: Checkbox toggles date and time pickers.
-  - Immediate optimistic update: adding a note updates the timeline and parent lead list without a full page reload.
-
-### 3. AI Reasoning Architecture (Pravar AI Differentiator)
-- **Chain-of-Thought (CoT) Ingestion**: Decomposes natural language notes into structured metadata:
-  - **Temporal Resolution**: Parses phrases like `"tomorrow at 2pm"`, `"next Tuesday at 10:30am"`, `"in 3 days"`, resolving them into ISO timestamps.
-  - **Wealth Topic Identification**: Identifies financial planning topics (Portfolio Allocation, Tax-Exempt Municipal Bonds, Executive Liquidity, Retirement Drawdowns).
-  - **Sentiment & Momentum**: Computes deal health (Positive / High Intent, Neutral / Exploratory, Hesitant / At Risk).
-  - **Fiduciary Next-Best-Action**: Formulates recommended next steps for advisors.
-  - **Inspectable Reasoning Trace**: Step-by-step audit trail (`[Perception] -> [Topic Modeling] -> [Temporal Resolution] -> [Sentiment] -> [Next Action]`).
-- **Zero-Dependency Offline Fallback**: Works 100% out of the box without requiring external paid API keys. An optional LLM API key can be added to `.env` for extended analysis.
-
-### 4. Bonus Features
-- 🔍 **Real-Time Search**: Search leads by name, company, phone, or past discussion content (`⌘K` shortcut).
-- 🏷️ **Multi-Status Filters**: Filter pills with live counts for all pipeline stages.
-- 🐳 **Docker Compose**: Production-ready containerized deployment (`docker compose up --build`).
-- 🌱 **Database Seed Script**: Pre-populated with realistic wireframe leads (Sarah Connor, Hank Scorpio, Bill Lumbergh, Bruce Wayne, Tony Stark, Elena Rostova).
+**LeadFlow** is designed from first principles as an **active advisory cockpit**:
+1. **Urgency-Driven Single-Screen Layout**: Pinned real-time tracking of today's scheduled follow-ups and high-visibility crimson alerts for overdue commitments.
+2. **Context-Preserving Chronological Timeline**: Deep relationship history presented in reverse chronological order with interactive pipeline stage progression.
+3. **Chain-of-Thought (CoT) Advisory AI**: Natural language parsing of conversational notes to extract temporal commitments, financial topics, client sentiment, and fiduciary next-best-actions with an inspectable reasoning trace.
 
 ---
 
-## 🛠️ Tech Stack
+## 🐟 Root-Cause Analysis: The Advisory CRM Problem Space (Ishikawa / Fishbone Model)
 
-| Layer | Technology | Rationale |
+To understand why conventional CRMs degrade advisor efficiency and client conversion, LeadFlow applies an Ishikawa Cause-and-Effect framework:
+
+```
+                    ADVISORY CRM LEAD DROP-OFF & CONVERSION LEAKAGE
+ ┌─────────────────────────┐               ┌─────────────────────────┐
+ │   ADVISOR INTERACTION   │               │    DATA & INTEGRATION   │
+ └────────────┬────────────┘               └────────────┬────────────┘
+              │                                         │
+  Manual Data Friction                     Unstructured Note Graveyards
+         \                                         \
+          \── Disjointed Form Fields                \── Missing Semantic Context
+           \                                         \
+            \── Manual Date Pickers                   \── No Fiduciary Trace
+             │                                         │
+─────────────┴─────────────────────────────────────────┴──────────────► [CLIENT CHURN &
+             ┬─────────────────────────────────────────┬──────────────►  MISSED REVENUE]
+             │                                         │
+            /── Uncalibrated Contact Timing           /── Hidden Lead Details
+           /                                         /
+          /── Forgotten Deadlines                   /── Cluttered Navigation
+         /                                         /
+  Timing Blindspots                        Cognitive Overload
+ ┌────────────┴────────────┐               ┌────────────┴────────────┐
+ │    TIMING & CADENCE     │               │    UI / ARCHITECTURE    │
+ └─────────────────────────┘               └─────────────────────────┘
+```
+
+### LeadFlow Structural Countermeasures
+
+| Dimension | Root Cause in Legacy CRMs | LeadFlow Architectural Solution |
 |---|---|---|
-| **Frontend** | **Next.js 14+ (App Router)** | High-performance React framework with server-ready routing and fast refresh |
-| **Language** | **TypeScript** | Strict end-to-end type safety for lead models, discussions, and AI payloads |
-| **Styling** | **Tailwind CSS** | Modern utility-first design system with ample breathing room, elevation, and badges |
-| **Icons** | **Lucide React** | Clean, accessible iconography |
-| **Backend** | **FastAPI (Python 3.10+)** | High-speed asynchronous Python framework with auto-generated OpenAPI docs |
-| **Database** | **SQLite + SQLAlchemy ORM** | Lightweight, zero-config relational database with Pydantic v2 schemas |
-| **AI Engine** | **CoT Temporal & Financial Reasoner** | Fiduciary rule and heuristic parser with step-by-step reasoning trace |
-| **Testing** | **pytest + httpx** | Comprehensive automated test suite for endpoints, pinning, and AI reasoning |
-| **Containers** | **Docker & Docker Compose** | Multi-container setup for standardized cross-platform evaluation |
+| **Interaction** | Manual form entry and date selection fatigue | 1-Click Follow-up presets (`+ Tomorrow 10 AM`, `+ In 2 Days`) & AI date detection |
+| **Data & Intel** | Notes buried as plain text without semantic meaning | Chain-of-Thought topic modeling (Bonds, Taxes, Liquidity) and sentiment scoring |
+| **Timing** | Advisors miss critical follow-up windows | Pinned `Today's Follow-ups` section with priority 0 sorting and Zia-style Best-Time suggestions |
+| **Architecture** | Deep navigation hierarchies and page redirects | Single-screen reactive hub with slide-over timeline dialog and optimistic updates |
 
 ---
 
-## 🏁 Quickstart Guide
+## 📐 System Architecture & Data Flow
 
-### Option 1: One-Command Docker Compose (Recommended)
+```
+                                      +---------------------------------------------+
+                                      |         Next.js 14 Single-Screen UI         |
+                                      |   (React 18, TypeScript, Tailwind CSS)      |
+                                      +----------------------+----------------------+
+                                                             |
+                                      REST API (JSON / HTTP) | Port 8000
+                                                             v
+                                      +---------------------------------------------+
+                                      |            FastAPI Python Backend           |
+                                      |         (Pydantic v2, Uvicorn ASGI)         |
+                                      +----------------------+----------------------+
+                                                             |
+                        +------------------------------------+------------------------------------+
+                        |                                                                         |
+                        v                                                                         v
+      +-----------------------------------+                                     +-----------------------------------+
+      |      AI Reasoning Pipeline        |                                     |         Persistence Layer         |
+      |   (Chain-of-Thought Engine)       |                                     |    (SQLAlchemy ORM + SQLite)      |
+      +-----------------+-----------------+                                     +-----------------+-----------------+
+                        |                                                                         |
+                        |-- Temporal Resolver (Regex & Date Parser)                               |-- Leads Table
+                        |-- Wealth Management Topic Classifier                                    |-- Discussions Table
+                        |-- Client Sentiment & Momentum Evaluator                                 |-- Activity Logs
+                        \-- Fiduciary Reasoning Trace Generator                                   \-- Pinned Indexing
+```
+
+---
+
+## 🚀 Core Functional Capabilities
+
+### 1. Single-Screen Command Center
+- **Lead Overview**: Displays full client name, firm/company affiliation, contact phone, status badge, excerpt of the most recent discussion note, and relative time elapsed (`time_ago`).
+- **Priority-Pinned Today's Follow-ups (`🚀 TODAY'S FOLLOW-UPS`)**: Automatically isolates and pins follow-ups scheduled for the current date with high-visibility urgency badges and real-time pulse indicators.
+- **Overdue Attention Flagging (`⚠️ OVERDUE FOLLOW-UPS`)**: Highlights missed commitments in distinct crimson cards with days-overdue indicators.
+- **Executive KPI Signals Strip**: Top-level metric cards providing immediate visibility into Total Pipeline, Follow-ups Due Today, Overdue Items, and Mandates Won with real-time conversion rates.
+
+### 2. Contextual Lead Timeline Dialog
+- **Modal Viewport**: Opens immediately upon selecting any lead, preserving page state without navigation overhead.
+- **Reverse-Chronological Discussion History**: Chronological feed connected via a vertical rail, showing relative time stamps, formatted calendar dates, and activity categorization (`📞 Phone Call`, `🤝 Discovery Meeting`, `📑 Proposal`, `📝 Note`).
+- **Interactive Pipeline Stage Progression Chevrons**: Visual pipeline tracker (`New` $\rightarrow$ `Contacted` $\rightarrow$ `Qualified` $\rightarrow$ `Proposal Sent` $\rightarrow$ `Won`) allowing single-click stage updates with immediate backend persistence.
+- **Discussion Logger & Scheduling**:
+  - Textarea supporting natural language entry.
+  - **✨ AI Reason & Extract**: Automatically extracts dates, topics, and actions from raw notes.
+  - **1-Click Follow-Up Presets**: Quick chips (`+ Tomorrow 10 AM`, `+ In 2 Days 2 PM`, `+ Next Week`) eliminating manual calendar input.
+  - **Optimistic State Synchronization**: Parent dashboard updates immediately upon saving.
+
+### 3. Fiduciary AI Reasoning Architecture
+- **Chain-of-Thought (CoT) Ingestion**: Structured decomposition of conversational notes:
+  - **Temporal Extraction**: Converts natural language phrases (e.g., *"tomorrow at 2pm"*, *"next Tuesday at 3pm"*, *"in 3 days"*) into standardized ISO 8601 timestamps.
+  - **Financial Intent Recognition**: Detects domain-specific advisory categories (Municipal Bonds, Tax-Advantaged Planning, Executive Stock Options, Retirement Drawdowns).
+  - **Sentiment & Deal Health**: Evaluates conversational sentiment (Positive / High Intent, Neutral / Exploratory, Hesitant / At Risk).
+  - **Verifiable Fiduciary Trace**: Provides an inspectable audit trail explaining *why* an action or stage transition was recommended.
+- **Zero-Dependency Fallback**: Fully functional offline without requiring external paid API keys; seamlessly accepts OpenAI / Gemini API keys via `.env` for LLM inference.
+
+### 4. Search & Multi-Criteria Filtering
+- **Live Search**: Instant client filtering across client names, company names, phone numbers, and past discussion text (`⌘K` shortcut).
+- **Stage & Cadence Filters**: Status pills (`All`, `New`, `Contacted`, `Qualified`, `Proposal Sent`, `Won`, `Lost`) with dynamic count badges and follow-up cadence chips.
+
+---
+
+## 🛠️ Technology Stack
+
+| Component | Technology | Rationale |
+|---|---|---|
+| **Frontend Framework** | **Next.js 14+ (App Router)** | Server-rendered React framework providing optimal performance and modular component boundaries |
+| **Language** | **TypeScript** | Strict compile-time typing for domain models, API contracts, and UI state |
+| **Design System** | **Tailwind CSS** | Utility-first styling enabling precise typography, elevation, and responsive layouts |
+| **Iconography** | **Lucide React** | Accessible, consistent enterprise icon system |
+| **Backend Framework** | **FastAPI (Python 3.10+)** | High-throughput asynchronous ASGI web framework with native Pydantic validation |
+| **Database & ORM** | **SQLite + SQLAlchemy ORM** | Lightweight relational engine with zero external daemon requirements and full ACID compliance |
+| **Testing** | **pytest + HTTPX** | Automated test harness validating API endpoints, sorting logic, and AI extraction |
+| **Containerization** | **Docker & Docker Compose** | Reproducible multi-container deployment architecture |
+
+---
+
+## 🏁 Deployment & Setup Guide
+
+### Method 1: Containerized Deployment via Docker Compose (Recommended)
 
 Requires Docker Desktop installed and running.
 
 ```bash
-# 1. Clone repository
-git clone <your-repo-url>
+# Clone repository
+git clone https://github.com/krish57-bit/leadflow.git
 cd leadflow
 
-# 2. Start services with Docker Compose
+# Launch services
 docker compose up --build
 ```
 
-- **Frontend**: Open [http://localhost:3000](http://localhost:3000)
-- **FastAPI Backend & Swagger Docs**: Open [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Frontend Client**: Access at [http://localhost:3000](http://localhost:3000)
+- **FastAPI OpenAPI Swagger Documentation**: Access at [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ---
 
-### Option 2: Local Development Setup (Manual)
+### Method 2: Local Development Environment
 
 #### Prerequisites
 - **Python 3.10+**
 - **Node.js 18+** (Node 20 LTS recommended)
 
-#### 1. Backend Setup (FastAPI)
+#### 1. Backend Service Configuration
 ```bash
-# Navigate to project root
 cd leadflow
 
 # Create and activate Python virtual environment
 python3 -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-# Install backend dependencies
+# Install dependencies
 pip install -r backend/requirements.txt
 
-# Seed the SQLite database with initial wireframe leads
+# Seed database with initial wireframe dataset
 PYTHONPATH=backend python backend/seed.py
 
-# Start FastAPI backend server
+# Launch FastAPI ASGI server
 cd backend
 uvicorn main:app --host 127.0.0.1 --port 8000 --reload
 ```
-*Backend runs at `http://127.0.0.1:8000` (API docs at `http://127.0.0.1:8000/docs`).*
+*Backend API service available at `http://127.0.0.1:8000`.*
 
-#### 2. Frontend Setup (Next.js)
-Open a new terminal window:
+#### 2. Frontend Application Configuration
+Open a secondary terminal:
 ```bash
 cd leadflow/frontend
 
@@ -124,135 +190,108 @@ npm install
 # Start Next.js development server
 npm run dev
 ```
-*Frontend runs at `http://localhost:3000`.*
+*Frontend application available at `http://localhost:3000`.*
 
 ---
 
-### Option 3: One-Command Local Script
+### Method 3: Unified Local Script
 
-On macOS/Linux, simply run:
+On POSIX-compliant systems (macOS / Linux):
 ```bash
+chmod +x run_dev.sh
 ./run_dev.sh
 ```
 
 ---
 
-## 🧪 Automated Testing
+## 🧪 Automated Testing & Verification
 
-LeadFlow includes comprehensive unit and integration tests covering API endpoints, lead pinning, status transitions, follow-up updates, and AI reasoning:
+LeadFlow features an automated test suite executed via `pytest`, verifying data integrity, priority pinning, stage persistence, and AI extraction:
 
 ```bash
-# Activate virtual environment
+cd leadflow
 source .venv/bin/activate
-
-# Run pytest suite
 PYTHONPATH=backend pytest backend/tests/test_api.py -v
 ```
 
-### Test Coverage Highlights:
-- `test_health`: Verifies backend service health check.
-- `test_get_leads_pinned_today`: Validates that today's follow-ups (Sarah Connor) are prioritized with priority 0.
-- `test_filter_by_status`: Ensures stage filtering (`Won`, `New`, etc.) returns exact subsets.
-- `test_search_by_name_and_note`: Validates search across lead names, companies, and historical discussion text.
-- `test_create_lead`: Verifies lead creation with default status `New` and initial discussion notes.
-- `test_update_status`: Verifies stage updates persist immediately.
-- `test_add_discussion_updates_follow_up`: Asserts that saving a discussion with a follow-up date updates the lead's follow-up immediately.
-- `test_ai_reasoning_endpoint`: Verifies temporal extraction ("next Tuesday at 3pm"), topic modeling, and reasoning traces.
+### Verification Matrix
+- `test_health`: Asserts backend service readiness.
+- `test_get_leads_pinned_today`: Validates priority 0 sorting for today's follow-up commitments.
+- `test_filter_by_status`: Confirms pipeline stage filtering accuracy.
+- `test_search_by_name_and_note`: Validates search across entity names and nested discussion notes.
+- `test_create_lead`: Verifies initial entity validation and default stage allocation.
+- `test_update_status`: Tests state persistence of stage updates.
+- `test_add_discussion_updates_follow_up`: Verifies that logging discussions synchronizes lead follow-up dates.
+- `test_ai_reasoning_endpoint`: Asserts temporal resolution accuracy, financial topic modeling, and reasoning trace generation.
 
 ---
 
-## 📡 API Reference
+## 📡 API Specification Reference
 
-Interactive Swagger documentation is available at `http://localhost:8000/docs`.
+Interactive OpenAPI documentation is hosted at `http://localhost:8000/docs`.
 
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/health` | Health check endpoint |
-| `GET` | `/api/leads` | List all leads with computed follow-up status, relative time, and pinning. Supports `?status=`, `?search=`, `?follow_up_filter=` |
-| `POST` | `/api/leads` | Create a new lead (Name required; company, phone, initial note optional) |
-| `GET` | `/api/leads/{id}` | Get lead details and full reverse-chronological discussion history |
-| `PATCH` | `/api/leads/{id}/status` | Update lead status (`New`, `Contacted`, `Qualified`, `Proposal Sent`, `Won`, `Lost`) |
-| `PATCH` | `/api/leads/{id}` | General lead update (name, company, phone, follow-up date) |
-| `POST` | `/api/leads/{id}/discussions` | Add a discussion note and update lead follow-up date |
-| `POST` | `/api/ai/analyze-note` | Chain-of-Thought AI reasoning pipeline for raw note analysis |
-| `POST` | `/api/seed` | Reset and re-seed database with realistic advisor scenarios |
-| `DELETE` | `/api/leads/{id}` | Delete a lead |
-
----
-
-## 🎥 Video & Screenshot Walkthrough Guide
-
-When recording your submission walkthrough or taking screenshots, follow this 4-step flow:
-
-1. **Main Screen Overview**:
-   - Point out **LeadFlow** branding with Pravar AI advisor context.
-   - Show `🚀 TODAY'S FOLLOW-UPS` pinned at the top with Sarah Connor (`🔔 Follow-up today at 2:00 PM`).
-   - Show `⚠️ OVERDUE FOLLOW-UPS` highlighted in red with Tony Stark.
-   - Show `ALL LEADS` with relative times (*"2 hours ago"*, *"1 week ago"*).
-2. **Search & Filters**:
-   - Filter by status (`Contacted`, `Won`).
-   - Use search input (`⌘K`) to search *"pricing"* or *"voicemail"* and show instant reactive results.
-3. **Lead Timeline Dialog & AI Reasoning**:
-   - Click Sarah Connor to open the timeline modal.
-   - Demonstrate the reverse chronological discussion cards with follow-up markers.
-   - Type in the discussion box: *"Reviewed portfolio proposal. Wants to review tax-exempt municipal bonds next Tuesday at 3pm."*
-   - Click **"✨ AI Reason & Extract"**: show the auto-detected follow-up date, sentiment pill, and collapsible Fiduciary Reasoning Trace!
-   - Click **"Save Note"**: demonstrate that the note appears at the top and Sarah's follow-up date updates immediately.
-   - Change her status to `Won`: show it persists and reflects immediately on the main dashboard.
-4. **Add New Lead**:
-   - Click `+ Add New Lead` (or press `N`).
-   - Enter *"Natasha Romanoff"*, Company *"Black Widow Capital"*, Phone *"555-0999"*.
-   - Submit and verify she appears instantly in the `New` leads section.
+| Method | Route | Description | Status Codes |
+|---|---|---|---|
+| `GET` | `/api/health` | Service health status check | `200` |
+| `GET` | `/api/leads` | List leads with computed status, pinning, and Zia best-time | `200` |
+| `POST` | `/api/leads` | Create new lead entity | `201`, `400` |
+| `GET` | `/api/leads/{id}` | Retrieve lead detail and chronological discussion timeline | `200`, `404` |
+| `PATCH` | `/api/leads/{id}/status` | Update lead pipeline stage | `200`, `400`, `404` |
+| `PATCH` | `/api/leads/{id}` | Update lead demographic and contact attributes | `200`, `400`, `404` |
+| `POST` | `/api/leads/{id}/discussions` | Append discussion record and update follow-up timestamp | `201`, `400`, `404` |
+| `POST` | `/api/ai/analyze-note` | Execute Chain-of-Thought reasoning on raw discussion text | `200`, `400` |
+| `POST` | `/api/seed` | Reset and initialize demonstration dataset | `200` |
+| `DELETE` | `/api/leads/{id}` | Remove lead entity | `200`, `404` |
 
 ---
 
-## 📂 Project Structure
+## 📂 Repository Structure
 
 ```
 leadflow/
 ├── backend/
-│   ├── ai_engine.py           # Chain-of-Thought reasoning & temporal date parser
-│   ├── database.py            # SQLite & SQLAlchemy engine setup
-│   ├── Dockerfile             # FastAPI backend container configuration
-│   ├── main.py                # FastAPI endpoints, CORS, sorting & pinning logic
-│   ├── models.py              # SQLAlchemy Lead and Discussion models
-│   ├── requirements.txt       # Python dependencies
-│   ├── schemas.py             # Pydantic v2 validation models
+│   ├── ai_engine.py           # Chain-of-Thought financial reasoning & temporal parser
+│   ├── database.py            # SQLite & SQLAlchemy engine configuration
+│   ├── Dockerfile             # Multi-stage FastAPI container configuration
+│   ├── main.py                # REST endpoints, CORS policies, and pinning logic
+│   ├── models.py              # SQLAlchemy Lead and Discussion database models
+│   ├── requirements.txt       # Python runtime dependencies
+│   ├── schemas.py             # Pydantic v2 validation contracts
 │   ├── seed.py                # Database seed script with 6 realistic wealth leads
 │   └── tests/
-│       └── test_api.py        # Automated pytest suite (8 test cases)
+│       └── test_api.py        # Automated test suite (8 test specifications)
 ├── frontend/
-│   ├── Dockerfile             # Next.js multi-stage build container
-│   ├── next.config.mjs        # Next.js configuration and API rewrites
-│   ├── package.json           # Frontend dependencies (React, Tailwind, Lucide)
-│   ├── postcss.config.js      # PostCSS config
-│   ├── tailwind.config.ts     # Tailwind theme & color tokens
-│   ├── tsconfig.json          # TypeScript configuration
+│   ├── Dockerfile             # Multi-stage production container build
+│   ├── next.config.mjs        # Next.js routing and API proxy configuration
+│   ├── package.json           # Frontend dependency manifest
+│   ├── postcss.config.js      # PostCSS configuration
+│   ├── tailwind.config.ts     # Tailwind design tokens and palette definitions
+│   ├── tsconfig.json          # TypeScript strict compiler configuration
 │   └── src/
 │       ├── app/
-│       │   ├── globals.css    # Global Tailwind styles
-│       │   ├── layout.tsx     # Root HTML layout with Inter font
-│       │   └── page.tsx       # Main single-screen LeadFlow dashboard
+│       │   ├── globals.css    # Global stylesheet and custom scrollbars
+│       │   ├── layout.tsx     # Root HTML document layout
+│       │   └── page.tsx       # Single-screen dashboard orchestrator
 │       ├── components/
-│       │   ├── AddLeadModal.tsx       # Modal for creating new leads
-│       │   ├── AIAdvisorDossier.tsx   # AI reasoning display & trace
-│       │   ├── FilterBar.tsx          # Status filter pills & live search (⌘K)
-│       │   ├── LeadCard.tsx           # Lead card with badges & time-ago
-│       │   ├── LeadTimelineModal.tsx  # Interactive dialog with timeline & note form
-│       │   └── StatusBadge.tsx        # Color-coded pipeline stage badge
+│       │   ├── AddLeadModal.tsx       # Entity creation modal with validation
+│       │   ├── AIAdvisorDossier.tsx   # Fiduciary reasoning trace and topic tags
+│       │   ├── FilterBar.tsx          # Multi-criteria status pills and live search
+│       │   ├── LeadCard.tsx           # Lead card with status, time-ago, and Zia badges
+│       │   ├── LeadTimelineModal.tsx  # Timeline dialog with pipeline chevrons
+│       │   └── StatusBadge.tsx        # Pipeline stage badge component
 │       ├── lib/
-│       │   └── api.ts                 # Strongly-typed API client
+│       │   └── api.ts                 # Strongly-typed HTTP API client
 │       └── types/
-│           └── index.ts               # Core TypeScript definitions
-├── .env.example               # Example environment variable template
-├── .gitignore                 # Git ignore rules
+│           └── index.ts               # Shared domain interfaces
+├── .env.example               # Environment variable specification template
+├── .gitignore                 # Version control exclusion rules
 ├── docker-compose.yml         # Multi-service container orchestration
-├── README.md                  # Comprehensive documentation
-└── run_dev.sh                 # Local development launcher
+├── README.md                  # Enterprise documentation
+└── run_dev.sh                 # Local development launcher script
 ```
 
 ---
 
 ## 📄 License & Attribution
 
-Submitted for the **AI-smart Fullstack Intern** coding assessment at **Pravar AI**. Developed with focus on clean software architecture, fiduciary domain reasoning, and human-centered design.
+Developed for the **AI-Smart Fullstack Intern** technical assessment at **Pravar AI**. Focused on fiduciary software engineering, cognitive UX reduction, and robust agentic reasoning.
